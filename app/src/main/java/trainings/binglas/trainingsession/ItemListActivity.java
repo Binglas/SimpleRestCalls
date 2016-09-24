@@ -105,6 +105,7 @@ public class ItemListActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<JsonObject> call, Throwable t) {
                         t.printStackTrace();
+                        // TODO FOR UNKNOWNHOST MOST OF THE TIMES IS BECOUSEÇ THERE IS NO INTERNET, HANDLE IT HERE!
                         /*mIsGettingImages = Boolean.FALSE;
                         if (mGettingImagesLl != null) {
                             mGettingImagesLl.setVisibility(View.GONE);

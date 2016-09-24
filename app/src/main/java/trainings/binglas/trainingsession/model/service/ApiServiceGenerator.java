@@ -12,7 +12,6 @@ public class ApiServiceGenerator {
 
     private static final String API_BASE_URL = "https://api.flickr.com";
 
-
     private static Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create());
