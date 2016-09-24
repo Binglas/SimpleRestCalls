@@ -1,31 +1,21 @@
 package trainings.binglas.trainingsession;
 
-import android.content.Context;
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.google.gson.JsonObject;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import trainings.binglas.trainingsession.dummy.DummyContent;
-import trainings.binglas.trainingsession.model.service.ApiServiceGenerator;
-import trainings.binglas.trainingsession.model.service.PicturesAPI;
-import trainings.binglas.trainingsession.utils.Defines;
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import trainings.binglas.trainingsession.model.ModelPhoto;
+import trainings.binglas.trainingsession.model.Photo;
+import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
 
 /**
  * An activity representing a list of Items. This activity
@@ -35,14 +25,23 @@ import trainings.binglas.trainingsession.utils.Defines;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends BaseActivity {
+
+    @Inject
+    NetworkServiceManager mNetworkServiceManager;
+
+    @Inject
+    ModelPhoto mModelPhoto;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
-    private PicturesAPI mServiceGenerator;
+    //private PicturesAPI mServiceGenerator;
+    private ProgressDialog progressDialog;
+    private RecyclerView mRecyclerView;
+    private List<Photo> mPhotoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,84 +52,42 @@ public class ItemListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        mServiceGenerator = ApiServiceGenerator.createService(PicturesAPI.class);
+        mRecyclerView = ButterKnife.findById(this, R.id.item_list);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading images from Flickr. Please wait...");
+
+
+        //mServiceGenerator = ApiServiceGenerator.createService(PicturesAPI.class);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Call<JsonObject> getPublicPics = mServiceGenerator.getPublicPictures(
-                        Defines.GET_PUBLIC_PICTURES_METHOD,
-                        Defines.API_KEY,
-                        Defines.DEFAULT_USER_ID,
-                        Defines.JSON_FORMAT,
-                        "1");
-                getPublicPics.enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        Log.d(Defines.TAG, "response : " + response.code());
-                        if (response.isSuccessful()) {
-                            JsonObject result = response.body();
-                            Log.d(Defines.TAG, result.toString());
-                            /*JsonObject result = response.body();
-                            final JsonObject data = result.getAsJsonObject(Defines.SKY_DATA);
-                            Integer offset = data.get(Defines.SKY_OFFSET).getAsInt();
-                            final JsonArray files = data.getAsJsonArray(Defines.FILES);
-
-                            if (files.size() >= 0) {
-                                mIsGettingImages = Boolean.FALSE;
-                                if (mGettingImagesLl != null) {
-                                    mGettingImagesLl.setVisibility(View.GONE);
-                                }
-                            }
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int i = 0; i < files.size(); i++) {
-                                        JsonObject file = files.get(i).getAsJsonObject();
-                                        ModelItem item = new ModelItem(file);
-                                        mAdapter.addItemAtTail(item);
-                                    }
-                                }
-                            }).start();
-
-
-                            if (offset != 0) {
-                                getAllImagesCloud(service,query,offset);
-                            }*/
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                        t.printStackTrace();
-                        // TODO FOR UNKNOWNHOST MOST OF THE TIMES IS BECOUSEÇ THERE IS NO INTERNET, HANDLE IT HERE!
-                        /*mIsGettingImages = Boolean.FALSE;
-                        if (mGettingImagesLl != null) {
-                            mGettingImagesLl.setVisibility(View.GONE);
-                        }*/
-                    }
-                });
+                //progressDialog.show();
+                mNetworkServiceManager.getPublicPhotos();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
 
-        View recyclerView = findViewById(R.id.item_list);
+        /*View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        setupRecyclerView((RecyclerView) recyclerView);*/
 
-        if (findViewById(R.id.item_detail_container) != null) {
+        /*if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
-        }
+        }*/
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+    private void sendImagesToAdapter() {
+
+    }
+
+    /*private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
     }
 
@@ -201,5 +158,5 @@ public class ItemListActivity extends AppCompatActivity {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
-    }
+    }*/
 }

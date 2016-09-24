@@ -1,4 +1,4 @@
-package trainings.binglas.trainingsession.model.service;
+package trainings.binglas.trainingsession.model.network;
 
 /**
  * Created by joaozao on 24/09/16.
