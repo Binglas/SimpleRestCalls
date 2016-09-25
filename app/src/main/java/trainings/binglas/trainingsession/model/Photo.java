@@ -37,15 +37,26 @@ public class Photo {
     @Expose
     private Integer isfamily;
 
-    private String thumbNail;
+    private String thumbnailListSize;
 
-    public String getThumbNail() {
-        return thumbNail;
+    private String thumbnailGridSize;
+
+    public String getThumbnailGridSize() {
+        return thumbnailGridSize;
     }
 
-    public void setThumbNail(String pThumbNail) {
-        thumbNail = pThumbNail;
+    public void setThumbnailGridSize(String pThumbnailGridSize) {
+        thumbnailGridSize = pThumbnailGridSize;
     }
+
+    public String getThumbnailListSize() {
+        return thumbnailListSize;
+    }
+
+    public void setThumbnailListSize(String pThumbnailListSize) {
+        thumbnailListSize = pThumbnailListSize;
+    }
+
 
     /**
      *

@@ -78,7 +78,8 @@ public class NetworkServiceManager {
                 if (response.isSuccessful()) {
                     //Log.d(Defines.TAG, "response body syze : " + response.body().getSizes().getSize());
                     List<Size> mSizeList = response.body().getSizes().getSize();
-                    photo.setThumbNail(mSizeList.get(0).getSource());
+                    photo.setThumbnailListSize(mSizeList.get(0).getSource());
+                    photo.setThumbnailGridSize(mSizeList.get(4).getSource());
                     mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);
                     EventBus.getDefault().post(new RetrievePicSizesEvent(response.body()));

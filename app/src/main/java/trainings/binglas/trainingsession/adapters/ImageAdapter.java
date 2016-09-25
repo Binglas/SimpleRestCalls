@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +29,18 @@ import trainings.binglas.trainingsession.utils.Defines;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     private final Context mContext;
-    private final List<Photo> mValuesPhoto;
     private boolean mIsGrid;
     private List<Photo> mDataList;
 
-    public ImageAdapter(Context pContext, List<Photo> pPhotos) {
+    public ImageAdapter(Context pContext) {
         mContext = pContext;
-        mValuesPhoto = pPhotos;
         mDataList = new ArrayList<>();
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d("_DEBUG", "view type : " + viewType);
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(viewType == 0 ? R.layout.element_image : R.layout.element_image_grid, parent, false);
         final ViewHolder viewHolder = new ViewHolder(v);
@@ -70,24 +71,41 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        int colorResID = mContext.getResources().getColor(R.color.thumbnail_border_gray);
         holder.mItem = mDataList.get(position);
         //int colorResId = mContext.getResources().getColor(R.color.thumbnail_border_gray);
         //holder.mContentView.setText(mValues.get(position).content);
         //holder.mIdView.setText(mValuesPhoto.get(position).getTitle());
-        String thumbnailUrl = holder.mItem.getThumbNail();
-        Log.i(Defines.TAG, "with thumbnail : " + thumbnailUrl);
-        Picasso.with(mContext).load(thumbnailUrl).fit().centerCrop().into(holder.getIcon());
+        String thumbnailListSizeUrl = holder.mItem.getThumbnailListSize();
+        String thumbnailGridSizeUrl = holder.mItem.getThumbnailGridSize();
+
+        Transformation transformation = new RoundedTransformationBuilder().borderColor(colorResID).borderWidthDp((float) 0.5).cornerRadiusDp(4).oval(false).build();
+        final ArrayList<Transformation> empty = new ArrayList<>();
+        final ArrayList<Transformation> nonEmpty = new ArrayList<>();
+        nonEmpty.add(transformation);
+
+        Log.i(Defines.TAG, "is Grid  : " + mIsGrid);
+        Picasso.with(mContext).load(mIsGrid ? thumbnailGridSizeUrl:thumbnailListSizeUrl).transform(nonEmpty).error(R.drawable.beagle).fit().centerCrop().into(holder.getIcon());
 
         holder.getName().setText(mDataList.get(position).getTitle());
-        if (!mIsGrid) {
-            holder.getDetails().setText("OLAAAAA DETAILSSS");
-            holder.getCloudIcon().setImageResource(R.drawable.beagle);
+        if (holder.getDetails() != null) {
+            holder.getDetails().setText(mIsGrid ? "" : "Olaa Details");
+        }
+
+        if (holder.getCloudIcon() != null) {
+            holder.getCloudIcon().setVisibility(mIsGrid ? View.GONE:View.VISIBLE);
         }
     }
 
     @Override
     public int getItemCount() {
         return mDataList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mIsGrid) return 1;
+        else return 0;
     }
 
     public void setIsGrid(boolean pIsGrid) {
@@ -109,7 +127,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mImageViewIcon;
         private TextView mTextViewName;
         private TextView mTextViewDetails;

@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
 import trainings.binglas.trainingsession.adapters.ImageAdapter;
 import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
 import trainings.binglas.trainingsession.event.RetrievePicSizesEvent;
@@ -93,19 +94,14 @@ public class ItemListActivity extends EventBaseActivity {
         progressDialog.setMessage("Loading images from Flickr. Please wait...");
         //progressDialog.show();
 
-        View recyclerView = findViewById(R.id.recycler_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        itemAdapter = new ImageAdapter(this);
 
-        //mRecyclerView = (RecyclerView) findViewById(R.id.recycler_list);
-        //itemAdapter = new ImageAdapter(this, mModelPhoto.getPhotos());
-        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView = ButterKnife.findById(this, R.id.recycler_list);
+        mRecyclerView.setHasFixedSize(true);
 
+        if (mRecyclerView == null) Log.e("_DEBUG_","recyclerview a null");
 
-        /*if (mRecyclerView != null) {
-            setupRecyclerView(mRecyclerView);
-        }*/
-        /*mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
 
         if (savedInstanceState != null) {
@@ -114,7 +110,15 @@ public class ItemListActivity extends EventBaseActivity {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
 
-        mRecyclerView.setAdapter(itemAdapter);*/
+        mRecyclerView.setAdapter(itemAdapter);
+
+
+        setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+
+        /*View recyclerView = findViewById(R.id.recycler_list);
+        assert recyclerView != null;
+        setupRecyclerView((RecyclerView) recyclerView);*/
+
         mNetworkServiceManager.retrievePublicPhotos();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -279,8 +283,9 @@ public class ItemListActivity extends EventBaseActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         Log.i(Defines.TAG, "VAI FAZER O SETUP : "+mModelSize.getSizes().toString());
-        itemAdapter = new ImageAdapter(this, mModelPhoto.getPhotos());
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(itemAdapter);
+        setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
         //setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
     }
 
