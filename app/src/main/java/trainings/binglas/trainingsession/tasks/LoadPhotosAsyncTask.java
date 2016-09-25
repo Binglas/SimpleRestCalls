@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import trainings.binglas.trainingsession.model.ModelPhoto;
+import trainings.binglas.trainingsession.model.photos.ModelPhoto;
 
 */
 /**
@@ -52,7 +52,7 @@ class LoadPhotosAsyncTask extends AsyncTask<String, Integer, List> {
         List result = new ArrayList();
         totalCount = photos.size();
         currentIndex = 0;
-        for (Photo photo : photos) {
+        for (PhotoInfo photo : photos) {
             currentIndex++;
             List sizes = flickr.getPhotos().getSizes(photo.getId());
             String thumbnailUrl = sizes.get(0).getSource();

@@ -4,15 +4,15 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import trainings.binglas.trainingsession.model.ModelPhoto;
-import trainings.binglas.trainingsession.model.ModelSize;
+import trainings.binglas.trainingsession.model.photos.ModelPhoto;
+import trainings.binglas.trainingsession.model.sizes.ModelSize;
 import trainings.binglas.trainingsession.model.network.ApiServiceGenerator;
 import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
 
 /**
  * Created by joaozao on 24/09/16.
  */
-@Module(injects = {ItemListActivity.class,}, complete = true)
+@Module(injects = {ItemListActivity.class, ItemDetailActivity.class}, complete = true)
 public class InjectorModule {
     private MyApplication mMyApplication;
 

@@ -1,6 +1,6 @@
 package trainings.binglas.trainingsession.event;
 
-import trainings.binglas.trainingsession.model.RetrievePhotosSizesResponse;
+import trainings.binglas.trainingsession.model.sizes.RetrievePhotosSizesResponse;
 
 /**
  * Created by joaozao on 25/09/16.
@@ -13,7 +13,7 @@ public class RetrievePicSizesEvent {
         mPicsSizesResponse = pRetrievePhotosSizesResponse;
     }
 
-    public RetrievePhotosSizesResponse getPublicPhotosResponse() {
+    public RetrievePhotosSizesResponse retrievePhotosSizesResponse() {
         return mPicsSizesResponse;
     }
 }

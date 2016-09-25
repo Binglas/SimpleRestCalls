@@ -3,7 +3,7 @@ package trainings.binglas.trainingsession.model.network;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
+import trainings.binglas.trainingsession.model.photos.GetPublicPhotosResponse;
 
 /**
  * Created by joaozao on 24/09/16.

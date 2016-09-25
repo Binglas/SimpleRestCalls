@@ -1,17 +1,16 @@
-package trainings.binglas.trainingsession.model;
+package trainings.binglas.trainingsession.model.infos;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by joaozao on 25/09/16.
+ * Created by joaozao on 24/09/16.
  */
 
-public class RetrievePhotosSizesResponse {
-
-    @SerializedName("sizes")
+public class RetrievePhotoInfo {
+    @SerializedName("photo")
     @Expose
-    private Sizes sizes;
+    private PhotoInfo photo;
     @SerializedName("stat")
     @Expose
     private String stat;
@@ -19,25 +18,25 @@ public class RetrievePhotosSizesResponse {
     /**
      *
      * @return
-     * The sizes
+     *     The photo
      */
-    public Sizes getSizes() {
-        return sizes;
+    public PhotoInfo getPhoto() {
+        return photo;
     }
 
     /**
      *
-     * @param sizes
-     * The sizes
+     * @param photo
+     *     The photo
      */
-    public void setSizes(Sizes sizes) {
-        this.sizes = sizes;
+    public void setPhoto(PhotoInfo photo) {
+        this.photo = photo;
     }
 
     /**
      *
      * @return
-     * The stat
+     *     The stat
      */
     public String getStat() {
         return stat;
@@ -46,7 +45,7 @@ public class RetrievePhotosSizesResponse {
     /**
      *
      * @param stat
-     * The stat
+     *     The stat
      */
     public void setStat(String stat) {
         this.stat = stat;
@@ -54,8 +53,8 @@ public class RetrievePhotosSizesResponse {
 
     @Override
     public String toString() {
-        return "RetrievePhotosSizesResponse{" +
-                "sizes=" + sizes +
+        return "RetrievePhotoInfo{" +
+                "photo=" + photo +
                 ", stat='" + stat + '\'' +
                 '}';
     }

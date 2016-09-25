@@ -1,4 +1,4 @@
-package trainings.binglas.trainingsession.model;
+package trainings.binglas.trainingsession.model.photos;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

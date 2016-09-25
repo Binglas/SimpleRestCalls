@@ -26,9 +26,9 @@ import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
 import trainings.binglas.trainingsession.event.RetrievePicSizesEvent;
 import trainings.binglas.trainingsession.misc.GridAutofitLayoutManager;
 import trainings.binglas.trainingsession.misc.LayoutManagerType;
-import trainings.binglas.trainingsession.model.ModelPhoto;
-import trainings.binglas.trainingsession.model.ModelSize;
-import trainings.binglas.trainingsession.model.Photo;
+import trainings.binglas.trainingsession.model.photos.ModelPhoto;
+import trainings.binglas.trainingsession.model.sizes.ModelSize;
+import trainings.binglas.trainingsession.model.photos.Photo;
 import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
 import trainings.binglas.trainingsession.utils.Defines;
 
@@ -204,8 +204,7 @@ public class ItemListActivity extends EventBaseActivity {
                     .commit();
         } else {
             Intent intent = new Intent(this, ItemDetailActivity.class);
-            //intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, pViewHolder.mItem.id);
-
+            intent.putExtra("photo", pViewHolder.mItem);
             startActivity(intent);
         }
     }
@@ -261,7 +260,7 @@ public class ItemListActivity extends EventBaseActivity {
     public void onEvent(RetrievePhotosEvent event) {
         //Log.d(Defines.TAG, "got photos:" + mModelPhoto.getPhotos());
         for (Photo photo : mModelPhoto.getPhotos()) {
-            mNetworkServiceManager.retrievePhotosSizes(photo);
+            mNetworkServiceManager.retrievePhotoSizes(photo);
             itemAdapter.addItemAtTail(photo);
         }
     }

@@ -1,4 +1,7 @@
-package trainings.binglas.trainingsession.model;
+package trainings.binglas.trainingsession.model.photos;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -7,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by joaozao on 24/09/16.
  */
 
-public class Photo {
+public class Photo implements Parcelable {
 
     @SerializedName("id")
     @Expose
@@ -38,8 +41,52 @@ public class Photo {
     private Integer isfamily;
 
     private String thumbnailListSize;
-
     private String thumbnailGridSize;
+    private String imageViewSize;
+    private String description;
+    private String originalFormat;
+    private String postedDate;
+    private String takenDate;
+
+    public String getImageViewSize() {
+        return imageViewSize;
+    }
+
+    public void setImageViewSize(String pImageViewSize) {
+        imageViewSize = pImageViewSize;
+    }
+
+    public String getPostedDate() {
+        return postedDate;
+    }
+
+    public void setPostedDate(String pPostedDate) {
+        postedDate = pPostedDate;
+    }
+
+    public String getTakenDate() {
+        return takenDate;
+    }
+
+    public void setTakenDate(String pTakenDate) {
+        takenDate = pTakenDate;
+    }
+
+    public String getOriginalFormat() {
+        return originalFormat;
+    }
+
+    public void setOriginalFormat(String pOriginalFormat) {
+        originalFormat = pOriginalFormat;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String pDescription) {
+        description = pDescription;
+    }
 
     public String getThumbnailGridSize() {
         return thumbnailGridSize;
@@ -232,6 +279,90 @@ public class Photo {
                 ", ispublic=" + ispublic +
                 ", isfriend=" + isfriend +
                 ", isfamily=" + isfamily +
+                ", thumbnailListSize='" + thumbnailListSize + '\'' +
+                ", thumbnailGridSize='" + thumbnailGridSize + '\'' +
+                ", imageViewSize='" + imageViewSize + '\'' +
+                ", description='" + description + '\'' +
+                ", originalFormat='" + originalFormat + '\'' +
+                ", postedDate='" + postedDate + '\'' +
+                ", takenDate='" + takenDate + '\'' +
                 '}';
     }
+
+    protected Photo(Parcel in) {
+        id = in.readString();
+        owner = in.readString();
+        secret = in.readString();
+        server = in.readString();
+        farm = in.readByte() == 0x00 ? null : in.readInt();
+        title = in.readString();
+        ispublic = in.readByte() == 0x00 ? null : in.readInt();
+        isfriend = in.readByte() == 0x00 ? null : in.readInt();
+        isfamily = in.readByte() == 0x00 ? null : in.readInt();
+        thumbnailListSize = in.readString();
+        thumbnailGridSize = in.readString();
+        imageViewSize = in.readString();
+        description = in.readString();
+        originalFormat = in.readString();
+        postedDate = in.readString();
+        takenDate = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(owner);
+        dest.writeString(secret);
+        dest.writeString(server);
+        if (farm == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(farm);
+        }
+        dest.writeString(title);
+        if (ispublic == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(ispublic);
+        }
+        if (isfriend == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(isfriend);
+        }
+        if (isfamily == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(isfamily);
+        }
+        dest.writeString(thumbnailListSize);
+        dest.writeString(thumbnailGridSize);
+        dest.writeString(imageViewSize);
+        dest.writeString(description);
+        dest.writeString(originalFormat);
+        dest.writeString(postedDate);
+        dest.writeString(takenDate);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Photo> CREATOR = new Parcelable.Creator<Photo>() {
+        @Override
+        public Photo createFromParcel(Parcel in) {
+            return new Photo(in);
+        }
+
+        @Override
+        public Photo[] newArray(int size) {
+            return new Photo[size];
+        }
+    };
 }

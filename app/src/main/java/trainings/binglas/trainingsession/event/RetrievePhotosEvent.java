@@ -1,6 +1,6 @@
 package trainings.binglas.trainingsession.event;
 
-import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
+import trainings.binglas.trainingsession.model.photos.GetPublicPhotosResponse;
 
 /**
  * Created by joaozao on 25/09/16.

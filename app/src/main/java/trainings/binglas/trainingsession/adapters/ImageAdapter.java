@@ -19,7 +19,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import trainings.binglas.trainingsession.ItemListActivity;
 import trainings.binglas.trainingsession.R;
-import trainings.binglas.trainingsession.model.Photo;
+import trainings.binglas.trainingsession.model.photos.Photo;
 import trainings.binglas.trainingsession.utils.Defines;
 
 /**

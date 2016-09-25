@@ -9,13 +9,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
+import trainings.binglas.trainingsession.event.RetrievePicInfoEvent;
 import trainings.binglas.trainingsession.event.RetrievePicSizesEvent;
-import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
-import trainings.binglas.trainingsession.model.ModelPhoto;
-import trainings.binglas.trainingsession.model.ModelSize;
-import trainings.binglas.trainingsession.model.Photo;
-import trainings.binglas.trainingsession.model.RetrievePhotosSizesResponse;
-import trainings.binglas.trainingsession.model.Size;
+import trainings.binglas.trainingsession.model.infos.PhotoInfo;
+import trainings.binglas.trainingsession.model.infos.RetrievePhotoInfo;
+import trainings.binglas.trainingsession.model.photos.GetPublicPhotosResponse;
+import trainings.binglas.trainingsession.model.photos.ModelPhoto;
+import trainings.binglas.trainingsession.model.sizes.ModelSize;
+import trainings.binglas.trainingsession.model.photos.Photo;
+import trainings.binglas.trainingsession.model.sizes.RetrievePhotosSizesResponse;
+import trainings.binglas.trainingsession.model.sizes.Size;
 import trainings.binglas.trainingsession.utils.Defines;
 
 /**
@@ -63,9 +66,9 @@ public class NetworkServiceManager {
         });
     }
 
-    public void retrievePhotosSizes(final Photo photo) {
+    public void retrievePhotoSizes(final Photo photo) {
         PicturesAPI picSizesService = mApiServiceGenerator.createService(PicturesAPI.class);
-        Call<RetrievePhotosSizesResponse> getPicSizes = picSizesService.getPicturesSizes(
+        Call<RetrievePhotosSizesResponse> getPicSizes = picSizesService.getPictureSizes(
                 Defines.GET_SIZES_METHOD,
                 Defines.API_KEY,
                 photo.getId(),
@@ -80,6 +83,7 @@ public class NetworkServiceManager {
                     List<Size> mSizeList = response.body().getSizes().getSize();
                     photo.setThumbnailListSize(mSizeList.get(0).getSource());
                     photo.setThumbnailGridSize(mSizeList.get(4).getSource());
+                    photo.setImageViewSize(mSizeList.get(6).getSource());
                     mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);
                     EventBus.getDefault().post(new RetrievePicSizesEvent(response.body()));
@@ -89,6 +93,40 @@ public class NetworkServiceManager {
 
             @Override
             public void onFailure(Call<RetrievePhotosSizesResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void retrievePhotoInfo(final Photo photo) {
+        PicturesAPI picInfoService = mApiServiceGenerator.createService(PicturesAPI.class);
+        Call<RetrievePhotoInfo> getPicSizes = picInfoService.getPictureInfo(
+                Defines.GET_INFO_METHOD,
+                Defines.API_KEY,
+                photo.getId(),
+                Defines.JSON_FORMAT,
+                "1");
+        getPicSizes.enqueue(new Callback<RetrievePhotoInfo>() {
+            @Override
+            public void onResponse(Call<RetrievePhotoInfo> call, Response<RetrievePhotoInfo> response) {
+                Log.d(Defines.TAG, "response : " + response.code());
+                Log.d(Defines.TAG, "response body: " + response.body());
+                if (response.isSuccessful()) {
+                    //Log.d(Defines.TAG, "response body syze : " + response.body().getSizes().getSize());
+                    PhotoInfo photoInfo = response.body().getPhoto();
+                    /*photo.setDescription(photoInfo.getDescription().getContent());
+                    photo.setOriginalFormat(photoInfo.getOriginalformat());
+                    photo.setPostedDate(photoInfo.getDates().getPosted());
+                    photo.setTakenDate(photoInfo.getDates().getTaken());*/
+                    Log.d(Defines.TAG, "photo info : " + photo);
+                    //mModelSize.setSizes(mSizeList);
+                    //mModelPhoto.setPhotos(mPhotoList);
+                    EventBus.getDefault().post(new RetrievePicInfoEvent(response.body()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RetrievePhotoInfo> call, Throwable t) {
 
             }
         });

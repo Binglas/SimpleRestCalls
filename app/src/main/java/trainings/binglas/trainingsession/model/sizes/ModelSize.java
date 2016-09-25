@@ -1,4 +1,4 @@
-package trainings.binglas.trainingsession.model;
+package trainings.binglas.trainingsession.model.sizes;
 
 import java.util.ArrayList;
 import java.util.List;

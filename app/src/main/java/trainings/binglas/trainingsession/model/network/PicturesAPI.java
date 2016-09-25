@@ -3,8 +3,8 @@ package trainings.binglas.trainingsession.model.network;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
-import trainings.binglas.trainingsession.model.RetrievePhotosSizesResponse;
+import trainings.binglas.trainingsession.model.infos.RetrievePhotoInfo;
+import trainings.binglas.trainingsession.model.sizes.RetrievePhotosSizesResponse;
 
 /**
  * Created by joaozao on 24/09/16.
@@ -13,7 +13,7 @@ import trainings.binglas.trainingsession.model.RetrievePhotosSizesResponse;
 public interface PicturesAPI {
 
     @GET("/services/rest")
-    Call<RetrievePhotosSizesResponse> getPicturesSizes(
+    Call<RetrievePhotosSizesResponse> getPictureSizes(
             @Query("method") String method,
             @Query("api_key")String apiKey,
             @Query("photo_id") String photoID,
@@ -21,7 +21,7 @@ public interface PicturesAPI {
             @Query("nojsoncallback") String noJson);
 
     @GET("/services/rest")
-    Call<GetPublicPhotosResponse> getInfo(
+    Call<RetrievePhotoInfo> getPictureInfo(
             @Query("method") String method,
             @Query("api_key")String apiKey,
             @Query("photo_id") String photoID,
