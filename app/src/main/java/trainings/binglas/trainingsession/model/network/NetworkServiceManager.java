@@ -4,12 +4,17 @@ import android.util.Log;
 
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
 import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
 import trainings.binglas.trainingsession.model.ModelPhoto;
+import trainings.binglas.trainingsession.model.ModelSize;
 import trainings.binglas.trainingsession.model.Photo;
+import trainings.binglas.trainingsession.model.RetrievePhotosSizesResponse;
+import trainings.binglas.trainingsession.model.Size;
 import trainings.binglas.trainingsession.utils.Defines;
 
 /**
@@ -19,15 +24,17 @@ import trainings.binglas.trainingsession.utils.Defines;
 public class NetworkServiceManager {
     private ApiServiceGenerator mApiServiceGenerator;
     private ModelPhoto mModelPhoto;
+    private ModelSize mModelSize;
 
 
-    public NetworkServiceManager(ApiServiceGenerator pApiServiceGenerator, ModelPhoto pModelPhoto) {
+    public NetworkServiceManager(ApiServiceGenerator pApiServiceGenerator, ModelPhoto pModelPhoto, ModelSize pModelSize) {
         mApiServiceGenerator = pApiServiceGenerator;
         mModelPhoto = pModelPhoto;
+        mModelSize = pModelSize;
     }
 
-    public void getPublicPhotos() {
-        PicturesAPI publicPicService = mApiServiceGenerator.createService(PicturesAPI.class);
+    public void retrievePublicPhotos() {
+        UserAPI publicPicService = mApiServiceGenerator.createService(UserAPI.class);
         Call<GetPublicPhotosResponse> getPublicPics = publicPicService.getPublicPictures(
                 Defines.GET_PUBLIC_PICTURES_METHOD,
                 Defines.API_KEY,
@@ -41,38 +48,8 @@ public class NetworkServiceManager {
                 if (response.isSuccessful()) {
                     List<Photo> mPhotoList = response.body().getPhotos().getPhoto();
                     mModelPhoto.setPhotos(mPhotoList);
-                    /*sendImagesToAdapter();
-                    ImageAdapter imageAdapter = new ImageAdapter(ItemListActivity.this, mPhotoList);
-                    mRecyclerView.setAdapter(imageAdapter);*/
+                    EventBus.getDefault().post(new RetrievePhotosEvent(response.body()));
                     Log.d(Defines.TAG, "" + mPhotoList);
-                    //progressDialog.hide();
-                            /*JsonObject result = response.body();
-                            final JsonObject data = result.getAsJsonObject(Defines.SKY_DATA);
-                            Integer offset = data.get(Defines.SKY_OFFSET).getAsInt();
-                            final JsonArray files = data.getAsJsonArray(Defines.FILES);
-
-                            if (files.size() >= 0) {
-                                mIsGettingImages = Boolean.FALSE;
-                                if (mGettingImagesLl != null) {
-                                    mGettingImagesLl.setVisibility(View.GONE);
-                                }
-                            }
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int i = 0; i < files.size(); i++) {
-                                        JsonObject file = files.get(i).getAsJsonObject();
-                                        ModelItem item = new ModelItem(file);
-                                        mAdapter.addItemAtTail(item);
-                                    }
-                                }
-                            }).start();
-
-
-                            if (offset != 0) {
-                                getAllImagesCloud(service,query,offset);
-                            }*/
                 }
             }
 
@@ -82,6 +59,35 @@ public class NetworkServiceManager {
             }
 
 
+        });
+    }
+
+    public void retrievePhotosSizes(String photoID) {
+        PicturesAPI picSizesService = mApiServiceGenerator.createService(PicturesAPI.class);
+        Call<RetrievePhotosSizesResponse> getPicSizes = picSizesService.getPicturesSizes(
+                Defines.GET_SIZES_METHOD,
+                Defines.API_KEY,
+                "29751642832",
+                Defines.JSON_FORMAT,
+                "1");
+        getPicSizes.enqueue(new Callback<RetrievePhotosSizesResponse>() {
+            @Override
+            public void onResponse(Call<RetrievePhotosSizesResponse> call, Response<RetrievePhotosSizesResponse> response) {
+                Log.d(Defines.TAG, "response : " + response.code());
+                if (response.isSuccessful()) {
+                    //Log.d(Defines.TAG, "response body syze : " + response.body().getSizes().getSize());
+                    List<Size> mSizeList = response.body().getSizes().getSize();
+                    mModelSize.setSizes(mSizeList);
+                    //mModelPhoto.setPhotos(mPhotoList);
+                    //EventBus.getDefault().post(new RetrievePhotosEvent(response.body()));
+                    Log.d(Defines.TAG, "" + mSizeList);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RetrievePhotosSizesResponse> call, Throwable t) {
+
+            }
         });
     }
 }

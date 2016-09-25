@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import java.util.List;
@@ -13,9 +14,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
 import trainings.binglas.trainingsession.model.ModelPhoto;
+import trainings.binglas.trainingsession.model.ModelSize;
 import trainings.binglas.trainingsession.model.Photo;
 import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
+import trainings.binglas.trainingsession.utils.Defines;
 
 /**
  * An activity representing a list of Items. This activity
@@ -25,13 +29,16 @@ import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends BaseActivity {
+public class ItemListActivity extends EventBaseActivity {
 
     @Inject
     NetworkServiceManager mNetworkServiceManager;
 
     @Inject
     ModelPhoto mModelPhoto;
+
+    @Inject
+    ModelSize mModelSize;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -64,7 +71,7 @@ public class ItemListActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 //progressDialog.show();
-                mNetworkServiceManager.getPublicPhotos();
+                mNetworkServiceManager.retrievePublicPhotos();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -83,8 +90,13 @@ public class ItemListActivity extends BaseActivity {
         }*/
     }
 
-    private void sendImagesToAdapter() {
-
+    public void onEvent(RetrievePhotosEvent event) {
+        Log.d(Defines.TAG, "got photos:" + mModelPhoto.getPhotos());
+        mNetworkServiceManager.retrievePhotosSizes("29751642832");
+        /*for (Photo photo : mModelPhoto.getPhotos()) {
+            Log.d(Defines.TAG, "photoID : " + photo.getId());
+            mNetworkServiceManager.retrievePhotosSizes(photo.getId());
+        }*/
     }
 
     /*private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

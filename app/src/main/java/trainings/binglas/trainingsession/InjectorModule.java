@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import trainings.binglas.trainingsession.model.ModelPhoto;
+import trainings.binglas.trainingsession.model.ModelSize;
 import trainings.binglas.trainingsession.model.network.ApiServiceGenerator;
 import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
 
@@ -26,13 +27,20 @@ public class InjectorModule {
 
 
     @Provides
-    public NetworkServiceManager provideFlickrFetchrServiceManager(ApiServiceGenerator pApiServiceGenerator, ModelPhoto pModelPhoto) {
-        return new NetworkServiceManager(pApiServiceGenerator, pModelPhoto);
+    public NetworkServiceManager provideFlickrFetchrServiceManager(ApiServiceGenerator pApiServiceGenerator,
+                                                                   ModelPhoto pModelPhoto, ModelSize pModelSize) {
+        return new NetworkServiceManager(pApiServiceGenerator, pModelPhoto, pModelSize);
     }
 
     @Provides
     @Singleton
     public ModelPhoto providePhotoManager() {
         return new ModelPhoto();
+    }
+
+    @Provides
+    @Singleton
+    public ModelSize provideSizesManager() {
+        return new ModelSize();
     }
 }

@@ -12,15 +12,15 @@ import java.util.List;
 
 public class Sizes {
 
-    @SerializedName("-canblog")
+    @SerializedName("canblog")
     @Expose
-    private String canblog;
-    @SerializedName("-canprint")
+    private Integer canblog;
+    @SerializedName("canprint")
     @Expose
-    private String canprint;
-    @SerializedName("-candownload")
+    private Integer canprint;
+    @SerializedName("candownload")
     @Expose
-    private String candownload;
+    private Integer candownload;
     @SerializedName("size")
     @Expose
     private List<Size> size = new ArrayList<Size>();
@@ -30,16 +30,16 @@ public class Sizes {
      * @return
      * The canblog
      */
-    public String getCanblog() {
+    public Integer getCanblog() {
         return canblog;
     }
 
     /**
      *
      * @param canblog
-     * The -canblog
+     * The canblog
      */
-    public void setCanblog(String canblog) {
+    public void setCanblog(Integer canblog) {
         this.canblog = canblog;
     }
 
@@ -48,16 +48,16 @@ public class Sizes {
      * @return
      * The canprint
      */
-    public String getCanprint() {
+    public Integer getCanprint() {
         return canprint;
     }
 
     /**
      *
      * @param canprint
-     * The -canprint
+     * The canprint
      */
-    public void setCanprint(String canprint) {
+    public void setCanprint(Integer canprint) {
         this.canprint = canprint;
     }
 
@@ -66,16 +66,16 @@ public class Sizes {
      * @return
      * The candownload
      */
-    public String getCandownload() {
+    public Integer getCandownload() {
         return candownload;
     }
 
     /**
      *
      * @param candownload
-     * The -candownload
+     * The candownload
      */
-    public void setCandownload(String candownload) {
+    public void setCandownload(Integer candownload) {
         this.candownload = candownload;
     }
 
@@ -97,4 +97,13 @@ public class Sizes {
         this.size = size;
     }
 
+    @Override
+    public String toString() {
+        return "Sizes{" +
+                "canblog=" + canblog +
+                ", canprint=" + canprint +
+                ", candownload=" + candownload +
+                ", size=" + size +
+                '}';
+    }
 }

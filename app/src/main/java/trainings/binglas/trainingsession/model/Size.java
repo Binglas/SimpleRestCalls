@@ -9,22 +9,22 @@ import com.google.gson.annotations.SerializedName;
 
 public class Size {
 
-    @SerializedName("-label")
+    @SerializedName("label")
     @Expose
     private String label;
-    @SerializedName("-width")
+    @SerializedName("width")
     @Expose
     private String width;
-    @SerializedName("-height")
+    @SerializedName("height")
     @Expose
     private String height;
-    @SerializedName("-source")
+    @SerializedName("source")
     @Expose
     private String source;
-    @SerializedName("-url")
+    @SerializedName("url")
     @Expose
     private String url;
-    @SerializedName("-media")
+    @SerializedName("media")
     @Expose
     private String media;
 
@@ -40,7 +40,7 @@ public class Size {
     /**
      *
      * @param label
-     * The -label
+     * The label
      */
     public void setLabel(String label) {
         this.label = label;
@@ -58,7 +58,7 @@ public class Size {
     /**
      *
      * @param width
-     * The -width
+     * The width
      */
     public void setWidth(String width) {
         this.width = width;
@@ -76,7 +76,7 @@ public class Size {
     /**
      *
      * @param height
-     * The -height
+     * The height
      */
     public void setHeight(String height) {
         this.height = height;
@@ -94,7 +94,7 @@ public class Size {
     /**
      *
      * @param source
-     * The -source
+     * The source
      */
     public void setSource(String source) {
         this.source = source;
@@ -112,7 +112,7 @@ public class Size {
     /**
      *
      * @param url
-     * The -url
+     * The url
      */
     public void setUrl(String url) {
         this.url = url;
@@ -130,10 +130,21 @@ public class Size {
     /**
      *
      * @param media
-     * The -media
+     * The media
      */
     public void setMedia(String media) {
         this.media = media;
     }
 
+    @Override
+    public String toString() {
+        return "Size{" +
+                "label='" + label + '\'' +
+                ", width='" + width + '\'' +
+                ", height='" + height + '\'' +
+                ", source='" + source + '\'' +
+                ", url='" + url + '\'' +
+                ", media='" + media + '\'' +
+                '}';
+    }
 }

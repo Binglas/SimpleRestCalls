@@ -4,6 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
+import trainings.binglas.trainingsession.model.RetrievePhotosSizesResponse;
 
 /**
  * Created by joaozao on 24/09/16.
@@ -12,10 +13,20 @@ import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
 public interface PicturesAPI {
 
     @GET("/services/rest")
-    Call<GetPublicPhotosResponse> getPublicPictures(
+    Call<RetrievePhotosSizesResponse> getPicturesSizes(
             @Query("method") String method,
             @Query("api_key")String apiKey,
-            @Query("user_id") String userID,
+            @Query("photo_id") String photoID,
             @Query("format") String format,
             @Query("nojsoncallback") String noJson);
+
+    @GET("/services/rest")
+    Call<GetPublicPhotosResponse> getInfo(
+            @Query("method") String method,
+            @Query("api_key")String apiKey,
+            @Query("photo_id") String photoID,
+            @Query("format") String format,
+            @Query("nojsoncallback") String noJson);
+
+
 }

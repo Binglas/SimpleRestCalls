@@ -37,6 +37,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp:+'
     compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.squareup.dagger:dagger:1.2.1'
     provided 'com.squareup.dagger:dagger-compiler:1.2.1'
     //apt 'com.google.dagger:dagger-compiler:2.0.2'

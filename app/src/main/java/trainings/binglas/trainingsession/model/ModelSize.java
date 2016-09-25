@@ -1,7 +1,7 @@
 package trainings.binglas.trainingsession.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by joaozao on 24/09/16.
@@ -9,26 +9,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class ModelSize {
 
-    @SerializedName("sizes")
-    @Expose
-    private Sizes sizes;
+    List<Size> mSizes = new ArrayList<Size>();
 
-    /**
-     *
-     * @return
-     * The sizes
-     */
-    public Sizes getSizes() {
-        return sizes;
+    public List<Size> getSizes() {
+        return mSizes;
     }
 
-    /**
-     *
-     * @param sizes
-     * The sizes
-     */
-    public void setSizes(Sizes sizes) {
-        this.sizes = sizes;
+    public void setSizes(List<Size> pSizes) {
+        mSizes = pSizes;
     }
 
 }
