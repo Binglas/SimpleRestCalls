@@ -37,6 +37,16 @@ public class Photo {
     @Expose
     private Integer isfamily;
 
+    private String thumbNail;
+
+    public String getThumbNail() {
+        return thumbNail;
+    }
+
+    public void setThumbNail(String pThumbNail) {
+        thumbNail = pThumbNail;
+    }
+
     /**
      *
      * @return

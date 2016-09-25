@@ -11,11 +11,13 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import trainings.binglas.trainingsession.ItemListActivity;
 import trainings.binglas.trainingsession.R;
-import trainings.binglas.trainingsession.model.Size;
+import trainings.binglas.trainingsession.model.Photo;
 import trainings.binglas.trainingsession.utils.Defines;
 
 /**
@@ -25,65 +27,120 @@ import trainings.binglas.trainingsession.utils.Defines;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     private final Context mContext;
-    private final List<Size> mSizeList;
+    private final List<Photo> mValuesPhoto;
+    private boolean mIsGrid;
+    private List<Photo> mDataList;
 
-    public ImageAdapter(Context pContext, List<Size> pSizeList) {
+    public ImageAdapter(Context pContext, List<Photo> pPhotos) {
         mContext = pContext;
-        mSizeList = pSizeList;
+        mValuesPhoto = pPhotos;
+        mDataList = new ArrayList<>();
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_list_test, parent, false);
+                .inflate(viewType == 0 ? R.layout.element_image : R.layout.element_image_grid, parent, false);
+        final ViewHolder viewHolder = new ViewHolder(v);
+        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View pView) {
+                ((ItemListActivity) mContext).handleClickAtRecyclerItem(viewHolder);
+                /*if (mTwoPane) {
+                    Bundle arguments = new Bundle();
+                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, viewHolder.mItem.id);
+                    ItemDetailFragment fragment = new ItemDetailFragment();
+                    fragment.setArguments(arguments);
+                    .getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.item_detail_container, fragment)
+                            .commit();
+                } else {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ItemDetailActivity.class);
+                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
 
-        return new ViewHolder(v);
+                    context.startActivity(intent);
+                }*/
+            }
+        });
+
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mList = mSizeList.get(position);
-        Log.i(Defines.TAG, "recycler item ulr :  "+ mSizeList.get(position).getUrl());
-        Log.i(Defines.TAG, "recycler holder icon :  "+ holder.getIcon());
-        holder.getTextView().setText("Pic url : ".concat(mSizeList.get(position).getUrl()));
-        holder.getView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View pView) {
-                Log.d(Defines.TAG, "CLICKED ON ITEM");
-            }
-        });
-        Picasso.with(mContext).load(mSizeList.get(position).getUrl()).into(holder.getIcon());
+        holder.mItem = mDataList.get(position);
+        //int colorResId = mContext.getResources().getColor(R.color.thumbnail_border_gray);
+        //holder.mContentView.setText(mValues.get(position).content);
+        //holder.mIdView.setText(mValuesPhoto.get(position).getTitle());
+        String thumbnailUrl = holder.mItem.getThumbNail();
+        Log.i(Defines.TAG, "with thumbnail : " + thumbnailUrl);
+        Picasso.with(mContext).load(thumbnailUrl).fit().centerCrop().into(holder.getIcon());
+
+        holder.getName().setText(mDataList.get(position).getTitle());
+        if (!mIsGrid) {
+            holder.getDetails().setText("OLAAAAA DETAILSSS");
+            holder.getCloudIcon().setImageResource(R.drawable.beagle);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mDataList.size();
+    }
+
+    public void setIsGrid(boolean pIsGrid) {
+        mIsGrid = pIsGrid;
+    }
+
+    public void addItemAtTail(Photo pItem) {
+        mDataList.add(pItem);
+        if (mContext instanceof  ItemListActivity) {
+            ((ItemListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemInserted(getItemCount() - 1);
+                }
+            });
+        }
     }
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView mTextView;
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mImageViewIcon;
+        private TextView mTextViewName;
+        private TextView mTextViewDetails;
+        private ImageView mImageViewCloud;
         private View mView;
-        public Size mList;
+        //public final TextView mContentView;
+        public Photo mItem;
 
-        public ViewHolder(View v) {
-            super(v);
-            mTextView = ButterKnife.findById(v, R.id.imageView);
-            mImageViewIcon = ButterKnife.findById(v, R.id.imageView);
-            mView = v;
+        public ViewHolder(View view) {
+            super(view);
+            mImageViewIcon = ButterKnife.findById(view, R.id.item_icon);
+            mTextViewName = ButterKnife.findById(view, R.id.item_name);
+            mTextViewDetails = ButterKnife.findById(view, R.id.item_details);
+            mImageViewCloud = ButterKnife.findById(view, R.id.item_cloud);
+            mView = view;
         }
 
         public ImageView getIcon() {
             return mImageViewIcon;
         }
 
-        public TextView getTextView() {
-            return mTextView;
+        public TextView getName() {
+            return mTextViewName;
+        }
+
+        public TextView getDetails() {
+            return mTextViewDetails;
+        }
+
+        public ImageView getCloudIcon() {
+            return mImageViewCloud;
         }
 
         public View getView() {
@@ -93,12 +150,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         @Override
         public String toString() {
             return "ViewHolder{" +
-                    "mTextView=" + mTextView +
-                    ", mImageViewIcon=" + mImageViewIcon +
+                    "mImageViewIcon=" + mImageViewIcon +
+                    ", mTextViewName=" + mTextViewName +
+                    ", mTextViewDetails=" + mTextViewDetails +
+                    ", mImageViewCloud=" + mImageViewCloud +
                     ", mView=" + mView +
-                    ", mList=" + mList +
+                    ", mItem=" + mItem +
                     '}';
         }
     }
-
 }
