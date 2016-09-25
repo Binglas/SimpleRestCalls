@@ -9,6 +9,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
+import trainings.binglas.trainingsession.event.RetrievePicSizesEvent;
 import trainings.binglas.trainingsession.model.GetPublicPhotosResponse;
 import trainings.binglas.trainingsession.model.ModelPhoto;
 import trainings.binglas.trainingsession.model.ModelSize;
@@ -67,7 +68,7 @@ public class NetworkServiceManager {
         Call<RetrievePhotosSizesResponse> getPicSizes = picSizesService.getPicturesSizes(
                 Defines.GET_SIZES_METHOD,
                 Defines.API_KEY,
-                "29751642832",
+                photoID,
                 Defines.JSON_FORMAT,
                 "1");
         getPicSizes.enqueue(new Callback<RetrievePhotosSizesResponse>() {
@@ -79,7 +80,7 @@ public class NetworkServiceManager {
                     List<Size> mSizeList = response.body().getSizes().getSize();
                     mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);
-                    //EventBus.getDefault().post(new RetrievePhotosEvent(response.body()));
+                    EventBus.getDefault().post(new RetrievePicSizesEvent(response.body()));
                     Log.d(Defines.TAG, "" + mSizeList);
                 }
             }

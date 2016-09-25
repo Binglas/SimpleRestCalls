@@ -1,10 +1,12 @@
 package trainings.binglas.trainingsession;
 
 import android.app.ProgressDialog;
+import android.util.Log;
 
 import de.greenrobot.event.EventBus;
 import trainings.binglas.trainingsession.event.HideDialogEvent;
 import trainings.binglas.trainingsession.event.ShowDialogEvent;
+import trainings.binglas.trainingsession.utils.Defines;
 
 
 /**
@@ -18,12 +20,14 @@ public abstract class EventBaseActivity extends BaseActivity{
     @Override
     protected void onPause() {
         super.onPause();
+        Log.e(Defines.TAG, "unregister Event");
         EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e(Defines.TAG, "register Event");
         EventBus.getDefault().register(this);
     }
 
