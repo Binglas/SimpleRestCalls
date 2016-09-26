@@ -15,11 +15,12 @@ import trainings.binglas.trainingsession.model.infos.PhotoInfo;
 import trainings.binglas.trainingsession.model.infos.RetrievePhotoInfo;
 import trainings.binglas.trainingsession.model.photos.GetPublicPhotosResponse;
 import trainings.binglas.trainingsession.model.photos.ModelPhoto;
-import trainings.binglas.trainingsession.model.sizes.ModelSize;
 import trainings.binglas.trainingsession.model.photos.Photo;
+import trainings.binglas.trainingsession.model.sizes.ModelSize;
 import trainings.binglas.trainingsession.model.sizes.RetrievePhotosSizesResponse;
 import trainings.binglas.trainingsession.model.sizes.Size;
 import trainings.binglas.trainingsession.utils.Defines;
+import trainings.binglas.trainingsession.utils.Utils;
 
 /**
  * Created by joaozao on 24/09/16.
@@ -114,6 +115,10 @@ public class NetworkServiceManager {
                 if (response.isSuccessful()) {
                     //Log.d(Defines.TAG, "response body syze : " + response.body().getSizes().getSize());
                     PhotoInfo photoInfo = response.body().getPhoto();
+                    Utils utils = new Utils();
+                    photo.setUsername(photoInfo.getOwner().getUsername());
+                    photo.setPostedDateHR(utils.getHRDate(photoInfo.getDates().getPosted()));
+                    photo.setLastUpdatedHR(utils.getHRDate(photoInfo.getDates().getLastupdate()));
                     photo.setDescription(photoInfo.getDescription().getContent());
                     photo.setOriginalFormat(photoInfo.getOriginalformat());
                     photo.setPostedDate(photoInfo.getDates().getPosted());
@@ -123,7 +128,7 @@ public class NetworkServiceManager {
                     Log.d(Defines.TAG, "photo info : " + photo);
                     //mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);
-                    EventBus.getDefault().post(new RetrievePicInfoEvent(response.body()));
+                    EventBus.getDefault().post(new RetrievePicInfoEvent(response.body(), photo));
                 }
             }
 

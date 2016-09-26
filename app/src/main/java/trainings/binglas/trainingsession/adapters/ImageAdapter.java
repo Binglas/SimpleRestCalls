@@ -40,7 +40,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d("_DEBUG", "view type : " + viewType);
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(viewType == 0 ? R.layout.element_image : R.layout.element_image_grid, parent, false);
         final ViewHolder viewHolder = new ViewHolder(v);
@@ -48,21 +47,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             @Override
             public void onClick(View pView) {
                 ((ItemListActivity) mContext).handleClickAtRecyclerItem(viewHolder);
-                /*if (mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, viewHolder.mItem.id);
-                    ItemDetailFragment fragment = new ItemDetailFragment();
-                    fragment.setArguments(arguments);
-                    .getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.item_detail_container, fragment)
-                            .commit();
-                } else {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
-                    context.startActivity(intent);
-                }*/
             }
         });
 
@@ -73,14 +57,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         int colorResID = mContext.getResources().getColor(R.color.thumbnail_border_gray);
         holder.mItem = mDataList.get(position);
-        //int colorResId = mContext.getResources().getColor(R.color.thumbnail_border_gray);
-        //holder.mContentView.setText(mValues.get(position).content);
-        //holder.mIdView.setText(mValuesPhoto.get(position).getTitle());
         String thumbnailListSizeUrl = holder.mItem.getThumbnailListSize();
         String thumbnailGridSizeUrl = holder.mItem.getThumbnailGridSize();
 
         Transformation transformation = new RoundedTransformationBuilder().borderColor(colorResID).borderWidthDp((float) 0.5).cornerRadiusDp(4).oval(false).build();
-        final ArrayList<Transformation> empty = new ArrayList<>();
         final ArrayList<Transformation> nonEmpty = new ArrayList<>();
         nonEmpty.add(transformation);
 

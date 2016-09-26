@@ -2,9 +2,7 @@ package trainings.binglas.trainingsession;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +13,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.List;
 
@@ -23,13 +22,14 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import trainings.binglas.trainingsession.adapters.ImageAdapter;
 import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
+import trainings.binglas.trainingsession.event.RetrievePicInfoEvent;
 import trainings.binglas.trainingsession.event.RetrievePicSizesEvent;
 import trainings.binglas.trainingsession.misc.GridAutofitLayoutManager;
 import trainings.binglas.trainingsession.misc.LayoutManagerType;
-import trainings.binglas.trainingsession.model.photos.ModelPhoto;
-import trainings.binglas.trainingsession.model.sizes.ModelSize;
-import trainings.binglas.trainingsession.model.photos.Photo;
 import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
+import trainings.binglas.trainingsession.model.photos.ModelPhoto;
+import trainings.binglas.trainingsession.model.photos.Photo;
+import trainings.binglas.trainingsession.model.sizes.ModelSize;
 import trainings.binglas.trainingsession.utils.Defines;
 
 /**
@@ -70,6 +70,7 @@ public class ItemListActivity extends EventBaseActivity {
     protected LayoutManagerType mCurrentLayoutManagerType;
 
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
+    private ProgressBar progressBar;
 
 
     @Override
@@ -89,17 +90,13 @@ public class ItemListActivity extends EventBaseActivity {
             actionGrid = Boolean.TRUE;
         }
 
-        //mRecyclerView = ButterKnife.findById(this, R.id.item_list);
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading images from Flickr. Please wait...");
-        //progressDialog.show();
+        progressBar = ButterKnife.findById(this, R.id.progress_bar);
 
         itemAdapter = new ImageAdapter(this);
 
         mRecyclerView = ButterKnife.findById(this, R.id.recycler_list);
         mRecyclerView.setHasFixedSize(true);
 
-        if (mRecyclerView == null) Log.e("_DEBUG_","recyclerview a null");
 
         mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
@@ -115,23 +112,17 @@ public class ItemListActivity extends EventBaseActivity {
 
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
 
-        /*View recyclerView = findViewById(R.id.recycler_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);*/
-
+        progressBar.setVisibility(View.VISIBLE);
         mNetworkServiceManager.retrievePublicPhotos();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //progressDialog.show();
-                //mNetworkServiceManager.retrievePublicPhotos();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
-
 
 
         if (findViewById(R.id.item_detail_container) != null) {
@@ -143,7 +134,7 @@ public class ItemListActivity extends EventBaseActivity {
         }
     }
 
-    @Override
+    /*@Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
@@ -151,7 +142,9 @@ public class ItemListActivity extends EventBaseActivity {
         if (tabletSize || mTwoPane) {
             recreate();
         }
-    }
+
+
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,8 +188,9 @@ public class ItemListActivity extends EventBaseActivity {
 
     public void handleClickAtRecyclerItem(ImageAdapter.ViewHolder pViewHolder) {
         if (mTwoPane) {
+            mNetworkServiceManager.retrievePhotoInfo(pViewHolder.mItem);
             Bundle arguments = new Bundle();
-            //arguments.putString(ItemDetailFragment.ARG_ITEM_ID, pViewHolder.mItem.id);
+            arguments.putParcelable(Defines.PHOTO_PARCELABLE, pViewHolder.mItem);
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -258,6 +252,9 @@ public class ItemListActivity extends EventBaseActivity {
     }
 
     public void onEvent(RetrievePhotosEvent event) {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
         for (Photo photo : mModelPhoto.getPhotos()) {
             mNetworkServiceManager.retrievePhotoSizes(photo);
             itemAdapter.addItemAtTail(photo);
@@ -268,13 +265,20 @@ public class ItemListActivity extends EventBaseActivity {
         itemAdapter.notifyDataSetChanged();
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        Log.i(Defines.TAG, "VAI FAZER O SETUP : "+mModelSize.getSizes().toString());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(itemAdapter);
-        setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+    public void onEvent(RetrievePicInfoEvent event) {
+        Log.i(Defines.TAG, "EVENTO RETRIEVE INFO");
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Defines.PHOTO_PARCELABLE, event.getPhoto());
+            ItemDetailFragment fragment = new ItemDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+        }
 
     }
+
 
     @Override
     protected void onResume() {

@@ -27,7 +27,7 @@ public class ItemDetailFragment extends Fragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+
     private Photo photo;
     private ImageView mDetailsImageView;
     private TextView mOwner;
@@ -36,6 +36,7 @@ public class ItemDetailFragment extends Fragment {
     private TextView mPosted;
     private TextView mTaken;
     private TextView mLastUpdated;
+    private TextView mDescriptionDescription;
 
     /**
      * The dummy content this fragment is presenting.
@@ -75,14 +76,16 @@ public class ItemDetailFragment extends Fragment {
         mPosted = (TextView) rootView.findViewById(R.id.posted_description);
         mTaken = (TextView) rootView.findViewById(R.id.taken_description);
         mLastUpdated = (TextView) rootView.findViewById(R.id.last_updated_description);
+        mDescriptionDescription = (TextView) rootView.findViewById(R.id.desciption_description);
 
         Picasso.with(getActivity(this)).load(photo.getImageViewSize()).into(mDetailsImageView);
-        mLocation.setText(photo.getTitle());
-        mOwner.setText(photo.getOwner());
+        mLocation.setText(photo.getLocation());
+        mOwner.setText(photo.getUsername());
         mType.setText(photo.getOriginalFormat());
-        mPosted.setText(photo.getPostedDate());
+        mPosted.setText(photo.getPostedDateHR());
         mTaken.setText(photo.getTakenDate());
-        mLastUpdated.setText(photo.getLastUpdated());
+        mLastUpdated.setText(photo.getLastUpdatedHR());
+        mDescriptionDescription.setText(photo.getDescription());
 
         return rootView;
     }

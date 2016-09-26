@@ -46,10 +46,40 @@ public class Photo implements Parcelable {
     private String description;
     private String originalFormat;
     private String postedDate;
+    private String postedDateHR;
     private String takenDate;
     private String lastUpdated;
+    private String lastUpdatedHR;
     private String location;
     private String username;
+
+
+    public String getPostedDateHR() {
+        return postedDateHR;
+    }
+
+    public void setPostedDateHR(String pPostedDateHR) {
+        postedDateHR = pPostedDateHR;
+    }
+
+
+    public String getLastUpdatedHR() {
+        return lastUpdatedHR;
+    }
+
+    public void setLastUpdatedHR(String pLastUpdatedHR) {
+        lastUpdatedHR = pLastUpdatedHR;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String pUsername) {
+        username = pUsername;
+    }
+
+
 
 
     public String getLocation() {

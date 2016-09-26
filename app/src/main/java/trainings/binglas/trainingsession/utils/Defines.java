@@ -16,4 +16,5 @@ public class Defines {
     public static final String JSON_FORMAT = "json";
 
     public static final String PHOTO_PARCELABLE = "photo";
+    public static final String DATE_FORMAT_HUMAN_READABLE = "dd/MM/yyyy HH:mm:ss";
 }

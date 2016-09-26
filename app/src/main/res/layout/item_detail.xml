@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="24dp"
+    android:animateLayoutChanges="true"
     tools:context="trainings.binglas.trainingsession.ItemDetailFragment">
 
     <ImageView
@@ -12,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:minHeight="200dp"
         android:layout_gravity="center_horizontal"
         />
     <android.support.v7.widget.CardView
