@@ -1,11 +1,11 @@
 package trainings.binglas.trainingsession;
 
-import android.app.ProgressDialog;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import de.greenrobot.event.EventBus;
-import trainings.binglas.trainingsession.event.HideDialogEvent;
-import trainings.binglas.trainingsession.event.ShowDialogEvent;
+import trainings.binglas.trainingsession.event.HideProgressEvent;
+import trainings.binglas.trainingsession.event.ShowProgressEvent;
 import trainings.binglas.trainingsession.utils.Defines;
 
 
@@ -14,7 +14,7 @@ import trainings.binglas.trainingsession.utils.Defines;
  */
 
 public abstract class EventBaseActivity extends BaseActivity{
-    private ProgressDialog mLoading;
+    private ProgressBar mLoading;
 
     //register/unregister for events from the EventBus
     @Override
@@ -31,16 +31,11 @@ public abstract class EventBaseActivity extends BaseActivity{
         EventBus.getDefault().register(this);
     }
 
-
-    public void onEvent(ShowDialogEvent event) {
-        mLoading = ProgressDialog.show(this, "Loading", "loading...", true);
+    public void onEvent(ShowProgressEvent event) {
+        // TODO use this events to show and hide the progress bar
     }
 
-    public void onEvent(HideDialogEvent event) {
-        if (mLoading == null) {
-            return;
-        }
-        mLoading.dismiss();
-        mLoading = null;
+    public void onEvent(HideProgressEvent event) {
+        // TODO use this events to show and hide the progress bar
     }
 }

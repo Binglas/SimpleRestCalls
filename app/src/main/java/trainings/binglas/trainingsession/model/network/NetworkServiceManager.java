@@ -39,6 +39,9 @@ public class NetworkServiceManager {
     }
 
     public void retrievePublicPhotos() {
+        // Using this event to show the progress bar in the begining of the call
+        //EventBus.getDefault().post(new ShowProgressEvent());
+        //
         UserAPI publicPicService = mApiServiceGenerator.createService(UserAPI.class);
         Call<GetPublicPhotosResponse> getPublicPics = publicPicService.getPublicPictures(
                 Defines.GET_PUBLIC_PICTURES_METHOD,
@@ -49,18 +52,42 @@ public class NetworkServiceManager {
         getPublicPics.enqueue(new Callback<GetPublicPhotosResponse>() {
             @Override
             public void onResponse(Call<GetPublicPhotosResponse> call, Response<GetPublicPhotosResponse> response) {
+                // After get the response hide the progress using this event
+                // EventBus.getDefault().post(new HideProgressEvent());
+                //
                 Log.d(Defines.TAG, "response : " + response.code());
                 if (response.isSuccessful()) {
                     List<Photo> mPhotoList = response.body().getPhotos().getPhoto();
                     mModelPhoto.setPhotos(mPhotoList);
                     EventBus.getDefault().post(new RetrievePhotosEvent(response.body()));
                     Log.d(Defines.TAG, "" + mPhotoList);
+                }else {
+                    switch (response.code()) {
+                        //TODO ERROR HANDLING
+                        case 1:
+                            break;
+                        case 100:
+                            break;
+                        case 105:
+                            break;
+                        case 106:
+                            break;
+                        case 111:
+                            break;
+                        case 112:
+                            break;
+                        case 114:
+                            break;
+                        case 115:
+                            break;
+                        case 116:
+                            break;
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<GetPublicPhotosResponse> call, Throwable t) {
-
             }
 
 
@@ -89,6 +116,30 @@ public class NetworkServiceManager {
                     //mModelPhoto.setPhotos(mPhotoList);
                     EventBus.getDefault().post(new RetrievePicSizesEvent(response.body()));
                     Log.d(Defines.TAG, "" + mSizeList);
+                }else {
+                    switch (response.code()) {
+                        //TODO ERROR HANDLING
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        case 100:
+                            break;
+                        case 105:
+                            break;
+                        case 106:
+                            break;
+                        case 111:
+                            break;
+                        case 112:
+                            break;
+                        case 114:
+                            break;
+                        case 115:
+                            break;
+                        case 116:
+                            break;
+                    }
                 }
             }
 
@@ -129,6 +180,49 @@ public class NetworkServiceManager {
                     //mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);
                     EventBus.getDefault().post(new RetrievePicInfoEvent(response.body(), photo));
+                } else {
+                    switch (response.code()) {
+                        //TODO ERROR HANDLING
+                        /**
+                         *
+                         * 1: Photo not found.
+                         The photo id was either invalid or was for a photo not viewable by the calling user.
+                         100: Invalid API Key
+                         The API key passed was not valid or has expired.
+                         105: Service currently unavailable
+                         The requested service is temporarily unavailable.
+                         106: Write operation failed
+                         The requested operation failed due to a temporary issue.
+                         111: Format "xxx" not found
+                         The requested response format was not found.
+                         112: Method "xxx" not found
+                         The requested method was not found.
+                         114: Invalid SOAP envelope
+                         The SOAP envelope send in the request could not be parsed.
+                         115: Invalid XML-RPC Method Call
+                         The XML-RPC request document could not be parsed.
+                         116: Bad URL found
+                         One or more arguments contained a URL that has been used for abuse on Flickr.
+                         */
+                        case 1:
+                            break;
+                        case 100:
+                            break;
+                        case 105:
+                            break;
+                        case 106:
+                            break;
+                        case 111:
+                            break;
+                        case 112:
+                            break;
+                        case 114:
+                            break;
+                        case 115:
+                            break;
+                        case 116:
+                            break;
+                    }
                 }
             }
 

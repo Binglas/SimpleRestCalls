@@ -1,10 +1,8 @@
 package trainings.binglas.trainingsession;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,8 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-
-import java.util.List;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -33,12 +30,7 @@ import trainings.binglas.trainingsession.model.sizes.ModelSize;
 import trainings.binglas.trainingsession.utils.Defines;
 
 /**
- * An activity representing a list of Items. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ItemDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
+ * Created by joaozao on 24/09/16.
  */
 public class ItemListActivity extends EventBaseActivity {
 
@@ -56,10 +48,7 @@ public class ItemListActivity extends EventBaseActivity {
      * device.
      */
     private boolean mTwoPane;
-    //private PicturesAPI mServiceGenerator;
-    private ProgressDialog progressDialog;
     private RecyclerView mRecyclerView;
-    private List<Photo> mPhotoList;
     private ImageAdapter itemAdapter;
     private Bundle mBundle;
     private MenuItem menuGrid;
@@ -71,6 +60,7 @@ public class ItemListActivity extends EventBaseActivity {
 
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private ProgressBar progressBar;
+    private boolean doubleBackToExitPressedOnce = false;
 
 
     @Override
@@ -115,36 +105,12 @@ public class ItemListActivity extends EventBaseActivity {
         progressBar.setVisibility(View.VISIBLE);
         mNetworkServiceManager.retrievePublicPhotos();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
 
         if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
     }
 
-    /*@Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
-
-        if (tabletSize || mTwoPane) {
-            recreate();
-        }
-
-
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -201,6 +167,26 @@ public class ItemListActivity extends EventBaseActivity {
             intent.putExtra(Defines.PHOTO_PARCELABLE, pViewHolder.mItem);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, R.string.info_press_back_exit, Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+
     }
 
     /**
@@ -266,7 +252,6 @@ public class ItemListActivity extends EventBaseActivity {
     }
 
     public void onEvent(RetrievePicInfoEvent event) {
-        Log.i(Defines.TAG, "EVENTO RETRIEVE INFO");
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(Defines.PHOTO_PARCELABLE, event.getPhoto());
@@ -276,7 +261,6 @@ public class ItemListActivity extends EventBaseActivity {
                     .replace(R.id.item_detail_container, fragment)
                     .commit();
         }
-
     }
 
 
