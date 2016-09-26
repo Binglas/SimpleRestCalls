@@ -15,4 +15,5 @@ public class Defines {
     public static final String FIND_USER_BY_ID_METHOD = "flickr.people.findByUsername";
     public static final String JSON_FORMAT = "json";
 
+    public static final String PHOTO_PARCELABLE = "photo";
 }

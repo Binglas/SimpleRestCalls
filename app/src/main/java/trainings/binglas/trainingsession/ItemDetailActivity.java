@@ -12,8 +12,10 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import trainings.binglas.trainingsession.event.RetrievePicInfoEvent;
 import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
 import trainings.binglas.trainingsession.model.photos.Photo;
+import trainings.binglas.trainingsession.utils.Defines;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -26,6 +28,7 @@ public class ItemDetailActivity extends EventBaseActivity {
     @Inject
     NetworkServiceManager mNetworkServiceManager;
     private Photo photo;
+    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class ItemDetailActivity extends EventBaseActivity {
         setContentView(R.layout.activity_item_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
-        photo = getIntent().getExtras().getParcelable("photo");
+        photo = getIntent().getExtras().getParcelable(Defines.PHOTO_PARCELABLE);
         Log.d("_DEBUG", "details activity photo with info : " + photo);
 
         mNetworkServiceManager.retrievePhotoInfo(photo);
@@ -66,14 +69,18 @@ public class ItemDetailActivity extends EventBaseActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
+            //arguments.putString(ItemDetailFragment.ARG_ITEM_ID,getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
+            arguments.putParcelable(Defines.PHOTO_PARCELABLE, photo);
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+    }
+
+    public void onEvent(RetrievePicInfoEvent event) {
+        Log.d(Defines.TAG, "photo after event :" + photo);
     }
 
     @Override

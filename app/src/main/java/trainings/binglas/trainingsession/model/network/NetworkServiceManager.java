@@ -114,10 +114,10 @@ public class NetworkServiceManager {
                 if (response.isSuccessful()) {
                     //Log.d(Defines.TAG, "response body syze : " + response.body().getSizes().getSize());
                     PhotoInfo photoInfo = response.body().getPhoto();
-                    /*photo.setDescription(photoInfo.getDescription().getContent());
+                    photo.setDescription(photoInfo.getDescription().getContent());
                     photo.setOriginalFormat(photoInfo.getOriginalformat());
                     photo.setPostedDate(photoInfo.getDates().getPosted());
-                    photo.setTakenDate(photoInfo.getDates().getTaken());*/
+                    photo.setTakenDate(photoInfo.getDates().getTaken());
                     Log.d(Defines.TAG, "photo info : " + photo);
                     //mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);

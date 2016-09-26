@@ -204,7 +204,7 @@ public class ItemListActivity extends EventBaseActivity {
                     .commit();
         } else {
             Intent intent = new Intent(this, ItemDetailActivity.class);
-            intent.putExtra("photo", pViewHolder.mItem);
+            intent.putExtra(Defines.PHOTO_PARCELABLE, pViewHolder.mItem);
             startActivity(intent);
         }
     }
@@ -258,7 +258,6 @@ public class ItemListActivity extends EventBaseActivity {
     }
 
     public void onEvent(RetrievePhotosEvent event) {
-        //Log.d(Defines.TAG, "got photos:" + mModelPhoto.getPhotos());
         for (Photo photo : mModelPhoto.getPhotos()) {
             mNetworkServiceManager.retrievePhotoSizes(photo);
             itemAdapter.addItemAtTail(photo);
@@ -266,18 +265,7 @@ public class ItemListActivity extends EventBaseActivity {
     }
 
     public void onEvent(RetrievePicSizesEvent event) {
-        //Log.d(Defines.TAG, "get Sizes : " + mModelSize.getSizes());
-        //ImageAdapter imageAdapter = new ImageAdapter(this, mModelSize.getSizes());
-        //mRecyclerView.setAdapter(imageAdapter);
-
-        //setupRecyclerView(mRecyclerView);
-        /*if (mRecyclerView != null) {
-            setupRecyclerView(mRecyclerView);
-        }*/
         itemAdapter.notifyDataSetChanged();
-        //itemAdapter.notifyDataSetChanged();
-        //itemAdapter.notifyDataSetChanged();
-        //progressDialog.hide();
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -285,7 +273,7 @@ public class ItemListActivity extends EventBaseActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(itemAdapter);
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
-        //setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+
     }
 
     @Override
