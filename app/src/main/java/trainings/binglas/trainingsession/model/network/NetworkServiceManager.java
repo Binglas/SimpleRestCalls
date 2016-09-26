@@ -118,6 +118,8 @@ public class NetworkServiceManager {
                     photo.setOriginalFormat(photoInfo.getOriginalformat());
                     photo.setPostedDate(photoInfo.getDates().getPosted());
                     photo.setTakenDate(photoInfo.getDates().getTaken());
+                    photo.setLastUpdated(photoInfo.getDates().getLastupdate());
+                    photo.setLocation(photoInfo.getOwner().getLocation());
                     Log.d(Defines.TAG, "photo info : " + photo);
                     //mModelSize.setSizes(mSizeList);
                     //mModelPhoto.setPhotos(mPhotoList);

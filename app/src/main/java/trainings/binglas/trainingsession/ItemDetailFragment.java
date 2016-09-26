@@ -1,11 +1,16 @@
 package trainings.binglas.trainingsession;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import trainings.binglas.trainingsession.model.photos.Photo;
 import trainings.binglas.trainingsession.utils.Defines;
@@ -24,6 +29,13 @@ public class ItemDetailFragment extends Fragment {
      */
     public static final String ARG_ITEM_ID = "item_id";
     private Photo photo;
+    private ImageView mDetailsImageView;
+    private TextView mOwner;
+    private TextView mLocation;
+    private TextView mType;
+    private TextView mPosted;
+    private TextView mTaken;
+    private TextView mLastUpdated;
 
     /**
      * The dummy content this fragment is presenting.
@@ -40,26 +52,9 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            //mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                //appBarLayout.setTitle(mItem.content);
-            }
-        }*/
         photo = getArguments().getParcelable(Defines.PHOTO_PARCELABLE);
 
 
-        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) this.getActivity().findViewById(R.id.toolbar_layout);
-        if (appBarLayout != null) {
-            appBarLayout.setTitle(photo.getTitle());
-        }
     }
 
     @Override
@@ -72,6 +67,45 @@ public class ItemDetailFragment extends Fragment {
            // ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.details);
         //}
 
+        Log.d(Defines.TAG, "photo on create view : " + photo);
+        mDetailsImageView = (ImageView) rootView.findViewById(R.id.details_imageView);
+        mOwner = (TextView) rootView.findViewById(R.id.owner_description);
+        mLocation = (TextView) rootView.findViewById(R.id.location_description);
+        mType = (TextView) rootView.findViewById(R.id.format_description);
+        mPosted = (TextView) rootView.findViewById(R.id.posted_description);
+        mTaken = (TextView) rootView.findViewById(R.id.taken_description);
+        mLastUpdated = (TextView) rootView.findViewById(R.id.last_updated_description);
+
+        Picasso.with(getActivity(this)).load(photo.getImageViewSize()).into(mDetailsImageView);
+        mLocation.setText(photo.getTitle());
+        mOwner.setText(photo.getOwner());
+        mType.setText(photo.getOriginalFormat());
+        mPosted.setText(photo.getPostedDate());
+        mTaken.setText(photo.getTakenDate());
+        mLastUpdated.setText(photo.getLastUpdated());
+
         return rootView;
+    }
+
+    /**
+     * When inside a nested fragment and Activity gets recreated due to reasons like orientation
+     * change, {@link android.support.v4.app.Fragment#getActivity()} returns old Activity but the top
+     * level parent fragment's {@link android.support.v4.app.Fragment#getActivity()} returns current,
+     * recreated Activity. Hence use this method in nested fragments instead of
+     * android.support.v4.app.Fragment#getActivity()
+     *
+     * @param fragment
+     *  The current nested Fragment
+     *
+     * @return current Activity that fragment is hosted in
+     */
+    public Activity getActivity(Fragment fragment) {
+        if (fragment == null) {
+            return null;
+        }
+        while (fragment.getParentFragment() != null) {
+            fragment = fragment.getParentFragment();
+        }
+        return fragment.getActivity();
     }
 }

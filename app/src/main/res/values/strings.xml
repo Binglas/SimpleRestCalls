@@ -3,4 +3,6 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="menu_grid">Grid View</string>
     <string name="menu_list">List View</string>
+    <string name="more_info_title">More Info</string>
+    <string name="description_title">Description</string>
 </resources>

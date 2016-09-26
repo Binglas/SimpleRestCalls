@@ -2,6 +2,7 @@ package trainings.binglas.trainingsession;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -28,10 +29,12 @@ public class ItemDetailActivity extends EventBaseActivity {
     @Inject
     NetworkServiceManager mNetworkServiceManager;
     private Photo photo;
-    private ActionBar mActionBar;
+    ItemDetailFragment fragment;
+    private Bundle mSavedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mSavedInstanceState = savedInstanceState;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
@@ -39,23 +42,36 @@ public class ItemDetailActivity extends EventBaseActivity {
         photo = getIntent().getExtras().getParcelable(Defines.PHOTO_PARCELABLE);
         Log.d("_DEBUG", "details activity photo with info : " + photo);
 
-        mNetworkServiceManager.retrievePhotoInfo(photo);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        if (appBarLayout != null) {
+            appBarLayout.setTitle(photo.getTitle());
         }
 
+        if (mSavedInstanceState == null) {
+            mNetworkServiceManager.retrievePhotoInfo(photo);
+        }
+
+
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+
+            // Show the Up button in the action bar.
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
+
+
+        }
+
+    public void onEvent(RetrievePicInfoEvent event) {
+        Log.d(Defines.TAG, "photo after event :" + photo);
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
         // (e.g. when rotating the screen from portrait to landscape).
@@ -65,22 +81,18 @@ public class ItemDetailActivity extends EventBaseActivity {
         //
         // http://developer.android.com/guide/components/fragments.html
         //
-        if (savedInstanceState == null) {
+
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             //arguments.putString(ItemDetailFragment.ARG_ITEM_ID,getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
             arguments.putParcelable(Defines.PHOTO_PARCELABLE, photo);
-            ItemDetailFragment fragment = new ItemDetailFragment();
+            fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment)
                     .commit();
-        }
-    }
 
-    public void onEvent(RetrievePicInfoEvent event) {
-        Log.d(Defines.TAG, "photo after event :" + photo);
     }
 
     @Override

@@ -47,6 +47,32 @@ public class Photo implements Parcelable {
     private String originalFormat;
     private String postedDate;
     private String takenDate;
+    private String lastUpdated;
+    private String location;
+    private String username;
+
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String pLocation) {
+        location = pLocation;
+    }
+
+
+
+
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String pLastUpdated) {
+        lastUpdated = pLastUpdated;
+    }
+
+
+
 
     public String getImageViewSize() {
         return imageViewSize;
@@ -267,28 +293,6 @@ public class Photo implements Parcelable {
         this.isfamily = isfamily;
     }
 
-    @Override
-    public String toString() {
-        return "Photo{" +
-                "id='" + id + '\'' +
-                ", owner='" + owner + '\'' +
-                ", secret='" + secret + '\'' +
-                ", server='" + server + '\'' +
-                ", farm=" + farm +
-                ", title='" + title + '\'' +
-                ", ispublic=" + ispublic +
-                ", isfriend=" + isfriend +
-                ", isfamily=" + isfamily +
-                ", thumbnailListSize='" + thumbnailListSize + '\'' +
-                ", thumbnailGridSize='" + thumbnailGridSize + '\'' +
-                ", imageViewSize='" + imageViewSize + '\'' +
-                ", description='" + description + '\'' +
-                ", originalFormat='" + originalFormat + '\'' +
-                ", postedDate='" + postedDate + '\'' +
-                ", takenDate='" + takenDate + '\'' +
-                '}';
-    }
-
     protected Photo(Parcel in) {
         id = in.readString();
         owner = in.readString();
@@ -365,4 +369,28 @@ public class Photo implements Parcelable {
             return new Photo[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Photo{" +
+                "id='" + id + '\'' +
+                ", owner='" + owner + '\'' +
+                ", secret='" + secret + '\'' +
+                ", server='" + server + '\'' +
+                ", farm=" + farm +
+                ", title='" + title + '\'' +
+                ", ispublic=" + ispublic +
+                ", isfriend=" + isfriend +
+                ", isfamily=" + isfamily +
+                ", thumbnailListSize='" + thumbnailListSize + '\'' +
+                ", thumbnailGridSize='" + thumbnailGridSize + '\'' +
+                ", imageViewSize='" + imageViewSize + '\'' +
+                ", description='" + description + '\'' +
+                ", originalFormat='" + originalFormat + '\'' +
+                ", postedDate='" + postedDate + '\'' +
+                ", takenDate='" + takenDate + '\'' +
+                ", lastUpdated='" + lastUpdated + '\'' +
+                ", location='" + location + '\'' +
+                '}';
+    }
 }
