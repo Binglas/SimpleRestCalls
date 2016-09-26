@@ -1,141 +1,280 @@
 package trainings.binglas.trainingsession;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import javax.inject.Inject;
 
-import trainings.binglas.trainingsession.dummy.DummyContent;
-
-import java.util.List;
+import butterknife.ButterKnife;
+import trainings.binglas.trainingsession.adapters.ImageAdapter;
+import trainings.binglas.trainingsession.event.RetrievePhotosEvent;
+import trainings.binglas.trainingsession.event.RetrievePicInfoEvent;
+import trainings.binglas.trainingsession.event.RetrievePicSizesEvent;
+import trainings.binglas.trainingsession.misc.GridAutofitLayoutManager;
+import trainings.binglas.trainingsession.misc.LayoutManagerType;
+import trainings.binglas.trainingsession.model.network.NetworkServiceManager;
+import trainings.binglas.trainingsession.model.photos.ModelPhoto;
+import trainings.binglas.trainingsession.model.photos.Photo;
+import trainings.binglas.trainingsession.model.sizes.ModelSize;
+import trainings.binglas.trainingsession.utils.Defines;
 
 /**
- * An activity representing a list of Items. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ItemDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
+ * Created by joaozao on 24/09/16.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends EventBaseActivity {
+
+    @Inject
+    NetworkServiceManager mNetworkServiceManager;
+
+    @Inject
+    ModelPhoto mModelPhoto;
+
+    @Inject
+    ModelSize mModelSize;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
+    private RecyclerView mRecyclerView;
+    private ImageAdapter itemAdapter;
+    private Bundle mBundle;
+    private MenuItem menuGrid;
+    private MenuItem menuList;
+    private Boolean actionList = null;
+    private Boolean actionGrid = null;
+    private RecyclerView.LayoutManager mLayoutManager;
+    protected LayoutManagerType mCurrentLayoutManagerType;
+
+    private static final String KEY_LAYOUT_MANAGER = "layoutManager";
+    private ProgressBar progressBar;
+    private boolean doubleBackToExitPressedOnce = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+        mBundle = savedInstanceState;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (actionList == null) {
+            actionList = Boolean.FALSE;
+        }
+        if (actionGrid == null) {
+            actionGrid = Boolean.TRUE;
+        }
 
-        View recyclerView = findViewById(R.id.item_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        progressBar = ButterKnife.findById(this, R.id.progress_bar);
+
+        itemAdapter = new ImageAdapter(this);
+
+        mRecyclerView = ButterKnife.findById(this, R.id.recycler_list);
+        mRecyclerView.setHasFixedSize(true);
+
+
+        mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
+
+        if (savedInstanceState != null) {
+            // Restore saved layout manager type.
+            mCurrentLayoutManagerType = (LayoutManagerType) savedInstanceState
+                    .getSerializable(KEY_LAYOUT_MANAGER);
+        }
+
+        mRecyclerView.setAdapter(itemAdapter);
+
+
+        setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+
+        progressBar.setVisibility(View.VISIBLE);
+        mNetworkServiceManager.retrievePublicPhotos();
+
 
         if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_list_activity, menu);
+        return true;
     }
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menuGrid = menu.findItem(R.id.action_grid).setVisible(actionGrid);
+        menuList = menu.findItem(R.id.action_list).setVisible(actionList);
 
-        private final List<DummyContent.DummyItem> mValues;
+        return super.onPrepareOptionsMenu(menu);
+    }
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_grid:
+                setRecyclerViewLayoutManager(LayoutManagerType.GRID_LAYOUT_MANAGER);
+                item.setVisible(false);
+                actionList = true;
+                actionGrid = false;
+
+                menuGrid.setVisible(actionGrid);
+                menuList.setVisible(actionList);
+                break;
+            case R.id.action_list:
+                setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
+                item.setVisible(false);
+                actionList = false;
+                actionGrid = true;
+
+                menuGrid.setVisible(actionGrid);
+                menuList.setVisible(actionList);
+                break;
         }
+        return super.onOptionsItemSelected(item);
+    }
 
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_content, parent, false);
-            return new ViewHolder(view);
+    public void handleClickAtRecyclerItem(ImageAdapter.ViewHolder pViewHolder) {
+        if (mTwoPane) {
+            mNetworkServiceManager.retrievePhotoInfo(pViewHolder.mItem);
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Defines.PHOTO_PARCELABLE, pViewHolder.mItem);
+            ItemDetailFragment fragment = new ItemDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, ItemDetailActivity.class);
+            intent.putExtra(Defines.PHOTO_PARCELABLE, pViewHolder.mItem);
+            startActivity(intent);
         }
+    }
 
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+    @Override
+    public void onBackPressed() {
 
-            holder.mView.setOnClickListener(new View.OnClickListener() {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, R.string.info_press_back_exit, Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
                 @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        ItemDetailFragment fragment = new ItemDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.item_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ItemDetailActivity.class);
-                        intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
-                        context.startActivity(intent);
-                    }
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
                 }
-            });
+            }, 2000);
+
+    }
+
+    /**
+     * Set RecyclerView's LayoutManager to the one given.
+     *
+     * @param layoutManagerType Type of layout manager to switch to.
+     */
+    public void setRecyclerViewLayoutManager(LayoutManagerType layoutManagerType) {
+        int scrollPosition = 0;
+
+        // If a layout manager has already been set, get current scroll position.
+        if (mRecyclerView != null) {
+            if (mRecyclerView.getLayoutManager() != null) {
+                scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                        .findFirstCompletelyVisibleItemPosition();
+            }
         }
 
-        @Override
-        public int getItemCount() {
-            return mValues.size();
+        if (itemAdapter == null) Log.e("_DEBUG_", "adapter a null");
+
+        switch (layoutManagerType) {
+            case GRID_LAYOUT_MANAGER:
+                mLayoutManager = new GridAutofitLayoutManager(this, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114,
+                        getResources().getDisplayMetrics()));
+                mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
+                if (itemAdapter != null) {
+                    itemAdapter.setIsGrid(true);
+                }
+                break;
+            case LINEAR_LAYOUT_MANAGER:
+                mLayoutManager = new LinearLayoutManager(this);
+                mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
+                if (itemAdapter != null) {
+                    itemAdapter.setIsGrid(false);
+                }
+                break;
+            default:
+                mLayoutManager = new LinearLayoutManager(this);
+                mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
+                if (itemAdapter != null) {
+                    itemAdapter.setIsGrid(false);
+                }
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
+        if (mRecyclerView != null) {
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.scrollToPosition(scrollPosition);
         }
     }
+
+    public void onEvent(RetrievePhotosEvent event) {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
+        for (Photo photo : mModelPhoto.getPhotos()) {
+            mNetworkServiceManager.retrievePhotoSizes(photo);
+            itemAdapter.addItemAtTail(photo);
+        }
+    }
+
+    public void onEvent(RetrievePicSizesEvent event) {
+        itemAdapter.notifyDataSetChanged();
+    }
+
+    public void onEvent(RetrievePicInfoEvent event) {
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Defines.PHOTO_PARCELABLE, event.getPhoto());
+            ItemDetailFragment fragment = new ItemDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Save currently selected layout manager.
+        outState.putSerializable(KEY_LAYOUT_MANAGER, mCurrentLayoutManagerType);
+        super.onSaveInstanceState(outState);
+    }
+
+
 }
